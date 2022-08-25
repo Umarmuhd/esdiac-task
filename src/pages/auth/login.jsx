@@ -10,30 +10,10 @@ import fetcher from "../../utils/fetcher";
 import toast from "react-hot-toast";
 import { Toaster } from "react-hot-toast";
 
-Yup.addMethod(Yup.string, "phoneNumber", function (countryCode) {
-  return this.test({
-    name: "phoneNumber",
-    exclusive: true,
-    message: "Not a valid number",
-    test: (value) => {
-      try {
-        console.log(value, countryCode);
-        const phoneUtils = parsePhoneNumber(value, countryCode ?? "NG");
-        console.log(phoneUtils.carrierCode);
-        return phoneUtils.isValid();
-      } catch (e) {
-        return false;
-      }
-    },
-  });
-});
-
 const LoginAuthentication = () => {
   const formSchema = Yup.object().shape({
     country_code: Yup.string().required("Country code is required").trim(""),
-    phone_number: Yup.string()
-      .required("Phone number is required")
-      .phoneNumber(),
+    phone_number: Yup.string().required("Phone number is required"),
     password: Yup.string().required("Password is required"),
   });
 
@@ -46,6 +26,10 @@ const LoginAuthentication = () => {
   const [loading, setLoading] = useState(false);
 
   const onSubmit = (data) => {
+    const { country_code, phone_number } = data;
+    const phoneUtils = parsePhoneNumber(phone_number, country_code ?? "NG");
+    if (!phoneUtils.isValid()) return toast.error(`Invalid phone number`);
+
     setLoading(true);
     fetcher("/login", data)
       .then((response) => {
@@ -140,7 +124,6 @@ const LoginAuthentication = () => {
                   name="password"
                   type="password"
                   autoComplete="current-password"
-                  required
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   {...register("password", { required: true })}
                 />

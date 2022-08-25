@@ -9,30 +9,11 @@ import SpinnerIcon from "../../components/SpinnerIcon";
 import { useRouter } from "next/router";
 import toast from "react-hot-toast";
 
-Yup.addMethod(Yup.string, "phoneNumber", function (value) {
-  return this.test({
-    name: "phoneNumber",
-    exclusive: true,
-    message: "Not a valid number",
-    test: (value) => {
-      try {
-        const phoneUtils = parsePhoneNumber(value, "NG");
-        console.log(phoneUtils, value);
-        return phoneUtils.isValid();
-      } catch (e) {
-        return false;
-      }
-    },
-  });
-});
-
 const SignupAuthentication = () => {
   const formSchema = Yup.object().shape({
     first_name: Yup.string().required("First name is required").trim(""),
     last_name: Yup.string().required("Last name is required").trim(""),
-    phone_number: Yup.string()
-      .required("Phone number is required")
-      .phoneNumber("Phone number is invalid"),
+    phone_number: Yup.string().required("Phone number is required"),
     email: Yup.string().required("Email address is required"),
     password: Yup.string().required("Password is required"),
   });
@@ -46,6 +27,10 @@ const SignupAuthentication = () => {
   const [loading, setLoading] = useState(false);
 
   const onSubmit = (data) => {
+    const { country_code, phone_number } = data;
+    const phoneUtils = parsePhoneNumber(phone_number, country_code ?? "NG");
+    if (!phoneUtils.isValid()) return toast.error(`Invalid phone number`);
+
     setLoading(true);
     fetcher("/signup", data)
       .then((response) => {

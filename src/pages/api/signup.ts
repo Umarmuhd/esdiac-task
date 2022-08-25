@@ -24,8 +24,6 @@ const signup = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
   } catch (e) {
-    console.log(e);
-
     res.status(401);
     res.json({ success: false, message: "User already exists" });
     return;
@@ -52,7 +50,9 @@ const signup = async (req: NextApiRequest, res: NextApiResponse) => {
     })
   );
 
-  res.status(200).json({ success: true, data: user });
+  res
+    .status(200)
+    .json({ success: true, data: user, message: "Signup successful!" });
 };
 
 export default signup;

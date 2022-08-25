@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 import { toast } from "react-hot-toast";
 import { useEffect } from "react";
 import { useSWRConfig } from "swr";
+import Link from "next/link";
 
 const Home: NextPage = () => {
   const { user, isLoading } = useMe();
@@ -18,18 +19,6 @@ const Home: NextPage = () => {
   useEffect(() => {
     if (!isLoading && !user) router.replace("/auth/login");
   }, [user, isLoading, router]);
-
-  const handleLogout = () => {
-    fetcher("/logout")
-      .then((response) => {
-        toast.success(response.message);
-        mutate("/me");
-        router.replace("/auth/login");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
 
   return (
     <div className="min-h-full">
@@ -95,12 +84,11 @@ const Home: NextPage = () => {
                       </div>
                     </div>
                     <div className="mt-5 flex justify-center sm:mt-0">
-                      <button
-                        onClick={handleLogout}
-                        className="flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                      >
-                        Logout
-                      </button>
+                      <Link href="/logout">
+                        <a className="flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                          Logout
+                        </a>
+                      </Link>
                     </div>
                   </div>
                 </div>

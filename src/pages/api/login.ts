@@ -7,8 +7,6 @@ import { comparePassword } from "../../utils/passwordUtils";
 const login = async (req: NextApiRequest, res: NextApiResponse) => {
   const { phone_number, password } = req.body;
 
-  console.log("phone_number: ", phone_number);
-
   const user = await prisma.user.findUnique({
     where: {
       phone_number: Number(phone_number).toString(),
@@ -17,7 +15,7 @@ const login = async (req: NextApiRequest, res: NextApiResponse) => {
 
   if (!user) {
     res.status(401);
-    res.json({ success: false, message: "Phone number or Password is wrong" });
+    res.json({ success: false, message: "User not found!" });
     return;
   }
 
